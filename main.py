@@ -154,7 +154,7 @@ def read_rss_from_traditionalSource(ruleName,rssUrl,newsSource,filterStatus,filt
         print(newsTitle)
         newsTitle = check_title_length(newsTitle) 
         newsUrl = newsContent.entries[i].link
-
+    #XXX:写入前检测部分应该单独分出一个函数
     #写入前检测 开始 ==============================================
 
 
@@ -230,36 +230,30 @@ def read_detailed_rule(ruleFile):
 
 
 #主函数
-def main():
-    #读取规则名称和规则地址 开始
-    ruleBasicInformation = read_all_the_rulefiles_from_files()
-    ruleNamesList = ruleBasicInformation[0]
-    ruleFilesList = ruleBasicInformation[1]
-    #读取规则名称和规则地址 结束
 
-    #开始嵌套循环处理 (我知道这样不好读但是我想偷懒)
-    for ruleOrder in range(0,len(ruleNamesList)):
-        #逐一读取详细规则信息 开始
-        detailedRule = read_detailed_rule(ruleFilesList[ruleOrder])
-        ruleName = ruleNamesList[ruleOrder]
-        ruleType =  detailedRule[0]
-        newsSource = detailedRule[1]
-        rssUrl = detailedRule[2]
-        filterStatus = detailedRule[3]
-        filterKeywords = detailedRule[4]
-        #逐一读取详细规则信息 结束
+#读取规则名称和规则地址 开始
+ruleBasicInformation = read_all_the_rulefiles_from_files()
+ruleNamesList = ruleBasicInformation[0]
+ruleFilesList = ruleBasicInformation[1]
+#读取规则名称和规则地址 结束
 
-        # 判断规则类型 (此处预计使用 switch 重构)
-        if ruleType == "informationFlow":
-            read_rss_from_informationFlowSource(ruleName,rssUrl,newsSource,filterStatus,filterKeywords)
-        elif ruleType == "traditional":
-            read_rss_from_traditionalSource(ruleName,rssUrl,newsSource,filterStatus,filterKeywords)
-        else:
-            print("规则类型不正确")
+#开始嵌套循环处理 (我知道这样不好读但是我想偷懒)
+for ruleOrder in range(0,len(ruleNamesList)):
+    #逐一读取详细规则信息 开始
+    detailedRule = read_detailed_rule(ruleFilesList[ruleOrder])
+    ruleName = ruleNamesList[ruleOrder]
+    ruleType =  detailedRule[0]
+    newsSource = detailedRule[1]
+    rssUrl = detailedRule[2]
+    filterStatus = detailedRule[3]
+    filterKeywords = detailedRule[4]
+    #逐一读取详细规则信息 结束
+
+    # 判断规则类型 (此处预计使用 switch 重构)
+    if ruleType == "informationFlow":
+        read_rss_from_informationFlowSource(ruleName,rssUrl,newsSource,filterStatus,filterKeywords)
+    elif ruleType == "traditional":
+        read_rss_from_traditionalSource(ruleName,rssUrl,newsSource,filterStatus,filterKeywords)
+    else:
+        print("规则类型不正确")
             
-
-#测试用函数 无实际意义 随时可删除
-#def main1():
-    read_rss_from_informationFlowSource('weibo_snqx','https://rssfeed.today/weibo/rss/5611537367','微博','on',["联动"])
-
-main()
