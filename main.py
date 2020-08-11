@@ -9,7 +9,7 @@ import linecache #用于读取文本文件
 #读取设置
 client = config.global_var.client
 tableUrl =config.global_var.tableUrl
-
+timeInterval = config.global_var.timeInterval
 #读取设置结束
 
 #将内容插入表格
@@ -34,12 +34,20 @@ def read_history_news(ruleName):
     historyUrlList = linecache.getline(ruleCacheFile, 1).replace("\n", "")
     historyUrlList = historyUrlList.split(",")
     historyUrlListGlobal = historyUrlList
-
+    #2020/8/12 插入的修改 ：加入了清除缓存,修复了读取文件历史异常的 bug 
+    linecache.clearcache()
+    #2020/8/12 修改结束
     return historyUrlList
 
 #检查当前源的历史新闻是否重复 返回 T 或 F
 def check_history_news(historyUrlList,newsUrl):     
     if newsUrl not in historyUrlList:
+
+        #2020/8/12 插入的修改 ：修复了此处的 historyUrlListGlobal 被看作局部变量的问题，修复了导致重复采集的 bug
+        global historyUrlListGlobal
+        historyUrlListGlobal = historyUrlList
+        #2020/8/12 修改结束
+
         historyUrlListGlobal.append(newsUrl)
         return False
     else:
@@ -229,7 +237,8 @@ def read_detailed_rule(ruleFile):
 
 
 
-#主函数
+#主程序部分
+
 
 #读取规则名称和规则地址 开始
 ruleBasicInformation = read_all_the_rulefiles_from_files()
@@ -257,3 +266,4 @@ for ruleOrder in range(0,len(ruleNamesList)):
     else:
         print("规则类型不正确")
             
+
